@@ -1,0 +1,10 @@
+bteq
+
+bteq .run file = filename
+
+----------------------------------------
+
+fexport < filename
+-------------------------------------------
+FastLoad < filename;
+mload < file

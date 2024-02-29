@@ -1,0 +1,25 @@
+.LOGON 192.168.40.128/dbc,dbc;
+database demo;
+.IMPORT VARTEXT ',' FILE=C:\Users\babje\OneDrive\Desktop\UTIL\EMP.TXT;
+.REPEAT *
+USING 
+EMPNO (VARCHAR(6)),
+FIRStNAME (VARCHAR(25)),
+LASTNAME (VARCHAR(25)),
+DOB (VARCHAR(25)),
+JOINDATE (varchar (25)),
+DEPTNO  (VARCHAR(5))
+
+INSERT INTO demo.EMP_BTEQ 
+values
+(
+:EMPNO,
+:FIRStNAME,
+:LASTNAME,
+:dob,
+:JOINDATE,
+:DEPTNO 
+);
+
+.logoff;
+.QUIT;

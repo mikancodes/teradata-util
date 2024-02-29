@@ -1,0 +1,16 @@
+.LOGTABLE demo;
+.LOGON 192.168.40.128/dbc,dbc;
+ DATABASE demo; 
+   .BEGIN EXPORT SESSIONS 2;  
+      .EXPORT OUTFILE C:\data\employeedata.txt  
+      MODE RECORD FORMAT TEXT;
+      SELECT CAST(Empno AS CHAR(10)), 
+         CAST(First_Name AS CHAR(15)), 
+         CAST(Last_Name AS CHAR(15)), 
+         CAST(dob AS CHAR(10))   
+      FROM
+      bteq_demo1;
+   .END EXPORT;
+.LOGOFF;
+
+

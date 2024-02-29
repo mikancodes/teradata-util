@@ -1,0 +1,36 @@
+CREATE SET TABLE EMP_bteq ( 
+   EmployeeNo INTEGER, 
+   FirstName VARCHAR(30), 
+   LastName VARCHAR(30), 
+   DOB DATE FORMAT 'YYYY-MM-DD', 
+   JOINDATE DATE FORMAT 'YYYY-MM-DD', 
+   DepartmentNo BYTEINT 
+) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+insert into employee values(101,'Mike','James','2005-01-01',1);
+insert into employee values(102,'Robert','Williams','2007-04-02',2);	
+insert into employee values(103,'Peter','Paul','2007-03-27',2);	
+insert into employee values(104,'Alex',	'Stuart','2008-03-08',2);	
+insert into employee values(105,'Robert','James','2008-01-03',3);	

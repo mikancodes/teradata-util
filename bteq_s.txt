@@ -1,0 +1,38 @@
+.LOGON 192.168.40.128/dbc,dbc; 
+   DATABASE demo;
+
+   CREATE TABLE employee_bkup ( 
+      Emp_NO INTEGER, 
+      EMP_NAME CHAR(30), 
+      JOB_TITLE CHAR(30), 
+      DEPT_NO SMALLINT
+      
+   );
+   
+
+   .IF ERRORCODE <> 0 THEN .EXIT ERRORCODE;
+  
+   SELECT * FROM  
+   Employee 
+   Sample 1; 
+   .IF ACTIVITYCOUNT <> 0 THEN .GOTO InsertEmployee;  
+
+   DROP TABLE employee_bkup;
+  
+   .IF ERRORCODE <> 0 THEN .EXIT ERRORCODE; 
+ 
+   .LABEL InsertEmployee 
+   INSERT INTO employee_bkup 
+   SELECT Emp_NO, 
+      EMP_NAME, 
+      JOB_TITLE, 
+      DEPT_NO
+      
+   FROM  
+   Employee ;  
+
+   .IF ERRORCODE <> 0 THEN .EXIT ERRORCODE; 
+.LOGOFF; 
+.QUIT;
+
+17:16 27-02-2024

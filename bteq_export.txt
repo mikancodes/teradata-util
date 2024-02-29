@@ -1,0 +1,9 @@
+.LOGON 192.168.40.128/dbc,dbc;
+database demo;
+.EXPORT FILE = C:\Users\babje\OneDrive\Desktop\UTIL\out.csv;
+.SET SEPARATOR ','
+.SET WIDTH 200;
+select * from emp_bteq;
+ 
+.LOGOFF
+.EXIT

@@ -1,0 +1,27 @@
+.LOGON 192.168.40.128/dbc,dbc;
+DATABASE demo;
+BEGIN LOADING bteq_demo1
+ERRORFILES Employee_ET1, Employee_UV1
+CHECKPOINT 10;
+SET RECORD VARTEXT ",";
+DEFINE 
+in_EmployeeNo (VARCHAR(10)) ,
+in_FirstName (VARCHAR(30)) , 
+in_LastName (VARCHAR(30)) ,
+in_BirthDate (VARCHAR(10)) , 
+in_JoinDate (VARCHAR(10)) ,
+in_DepartmentNo (VARCHAR(2)) 
+FILE=C:\Users\babje\OneDrive\Desktop\UTIL\emp.txt;
+INSERT INTO bteq_demo1 VALUES( 
+:in_EmployeeNo , 
+:in_FirstName ,
+:in_LastName , 
+:in_BirthDate (FORMAT 'YYYY-MM-DD'),
+:in_JoinDate (FORMAT 'YYYY-MM-DD'),
+:in_DepartmentNo );
+
+end loading;
+logoff;
+
+
+11:36 29-02-2024

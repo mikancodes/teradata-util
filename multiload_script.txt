@@ -1,0 +1,43 @@
+.LOGTABLE demo.EMP_STG_LT1;
+ LOGON 192.168.40.128/dbc,dbc;
+ database demo;
+.BEGIN IMPORT MLOAD
+ TABLES      EMPLOYEE_STG1,EMPLOYEE_STG2
+ WORKTABLES  EMPLOYEE_WT1,EMPLOYEE_WT2
+ ERRORTABLES EMPLOYEE_ET1 EMPLOYEE_UV1,
+ EMPLOYEE1_ET1 EMPLOYEE1_UV1 ;
+
+.LAYOUT EMPLOYEE_STG;
+.FIELD in_EmployeeNo * VARCHAR(10);
+.FIELD in_FirstName * VARCHAR(30);
+.FIELD in_LastName * VARCHAR(30);
+.FIELD in_BirthDate * VARCHAR(10);
+.FIELD in_JoinedDate * VARCHAR(10);
+.FIELD in_DepartmentNo * VARCHAR(02);
+
+ .DML LABEL EMPLOYEE_STG1 ;
+ INSERT INTO EMPLOYEE_STG1 VALUES
+ (:in_EmployeeNo,
+  :in_FirstName,
+  :in_Lastname,
+  :in_BirthDate, 
+  :in_JoinedDate,
+  :in_DepartmentNo);
+
+ .DML LABEL EMPLOYEE_STG2 ;
+ INSERT INTO EMPLOYEE_STG2 VALUES
+ (:in_EmployeeNo,
+  :in_FirstName,
+  :in_Lastname,
+  :in_BirthDate, 
+  :in_JoinedDate,
+  :in_DepartmentNo);
+
+.IMPORT INFILE C:\Users\babje\OneDrive\Desktop\UTIL\emp.txt
+  LAYOUT EMPLOYEE_STG
+  FORMAT VARTEXT ','
+  APPLY EMPLOYEE_STG1 WHERE  in_DepartmentNo =1
+  APPLY EMPLOYEE_STG2 WHERE  in_DepartmentNo =2 ;
+ .END MLOAD;
+ .LOGOFF;
+

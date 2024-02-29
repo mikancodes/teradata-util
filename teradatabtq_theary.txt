@@ -1,0 +1,123 @@
+BTEQ utility is a powerful utility in Teradata that can be used in both batch and interactive mode. 
+It can be used to run any DDL statement, 
+DML statement,
+create Macros and stored procedures.
+BTEQ can be used to import data into Teradata tables from flat file 
+
+it can also be used to extract data from tables into files or reports.
+
+.LOGON  tdpid/UserName
+PASSWORD
+
+
+
+SELECT * FROM Employee;
+
+
+
+
+==================================================
+
+
+.LOGON  tdpid/UserName,Password 
+   CREATE SET TABLE Tables_Database.Employee, FALLBACK
+   (Associate_Id INTEGER,
+    Associate_Name CHAR(25),
+    Salary DECIMAL(8,2),
+    DOB DATE,
+    Job_Title VARCHAR(25),
+    Dept_No SMALLINT,
+    Marital_Status CHAR,
+    No_Of_Dependents BYTEINT)
+   UNIQUE PRIMARY INDEX (Associate_Id);
+   .quit
+=================================================
+
+.LOGON 192.168.1.102/dbc,dbc; 
+   DATABASE tduser;
+
+   CREATE TABLE employee_bkup ( 
+      EmployeeNo INTEGER, 
+      FirstName CHAR(30), 
+      LastName CHAR(30), 
+      DepartmentNo SMALLINT, 
+   )
+   Unique Primary Index(EmployeeNo);
+
+   .IF ERRORCODE <> 0 THEN .EXIT ERRORCODE;
+  
+   SELECT * FROM  
+   Employee 
+   Sample 1; 
+
+  .IF ACTIVITYCOUNT <> 0 THEN .GOTO InsertEmployee;  
+
+  .LABEL InsertEmployee 
+   INSERT INTO employee_bkup 
+   SELECT EmployeeNo, 
+      FirstName, 
+      LastName, 
+      DepartmentNo, 
+   FROM  
+   Employee 
+   .IF ERRORCODE <> 0 THEN .EXIT ERRORCODE; 
+.LOGOFF;
+FAST EXPORT
+
+------------------------------------------------------------------------------------------
+FastExport ,the name itself is spells to exports data from Teradata to a Flat file. But BTEQ also does the same thing.The main difference is BTEQ exports data in rows and FastExport exports data in 64K blocks. So if its required to load data with lightning speed Fast export is the best choice.
+
+FastExport is a 64K block utility it falls under the limit of 15 block utilities. That means that a system can’t have more than a combination of 15 FastLoads, MultiLoads, and FastExports.
+
+Basic fundamentals of FastExport
+FastExport EXPORTS data from Teradata.
+FastExport only supports the SELECT statement.
+Choose FastExport over BTEQ when Exporting Data of more than half a million+ rows
+FastExport supports multiple SELECT statements and multiple tables in a single run
+FastExport supports conditional logic, conditional expressions, arithmetic calculations, and data
+conversions.
+FastExport does NOT support error files or error limits.
+FastExport supports user-written routines INMODs and OUTMODs
+--------------------------------------------------------------------------------
+Fastload, the name itself telling that loads data in a fast way.That means it loads huge amount of data from flat file into EMPTY tables.
+
+Manily FastLoad was developed to load millions of rows into empty Teradata tables so it is fast.
+FastLoad will create a Teradata session for each AMP in order to maximize parallel processing.This gives awesome performance in loading data.
+
+There are more reasons why FastLoad is so fast. Below are limitations of Fast load.
+1) No Secondary Indexes are allowed on the Target Table
+Questions Amount Amps
+: Usually UPI and NUPI are used in Teradata to distribute the rows evenly across the AMPs.Secondary indexes are stored in a subtable block and many times on a different AMP from the data row.
+
+2)No Referential Integrity is allowed: The Referential Integrity defined on a table would take more system checking to prevent referential constraints.
+
+3)No Triggers are allowed at load time: Fast load focused on data load with high speed. So triggers not allowed.
+
+4)Duplicate Rows (in Multi-Set Tables) are not supported: Multiset tables are allowed duplicate data. Fastload can load the data into multiset tables but duplicate rows are discarded.
+
+5)No AMPs may go down (i.e., go offline) while FastLoad is processing: The down AMP must be repaired before the load process can be restarted
+
+6)No more than one data type conversion is allowed per column: Data type conversion cause high resource utilization on the system
+
+Fastload requires mainly three components
+-----------------------------------------------------------------------------------------------
+Teradata Multi Load
+Main use: Load, update and delete large tables in Teradata in a bulk mode
+Efficient in loading very large tables
+Multiple tables can be loaded at a time.
+Updates data in a database in a block mode (one physical write can update multiple rows)
+Uses table-level locks
+Resource consumption: loading at the highest possible throughput
+Duplicate rows allowed
+TERADATA PARALLEL DATA PUMP (TPUMP)
+Main use: to load or update a small amount of target table rows
+Sends data to a database as a statement which is much slower than using bulk mode
+TPump uses row-level hash locks
+Resource consumption: loading speed can be adjusted using a built-in resource consumption management utility. The throughput can be turned down in peak periods.
+TPump does not support MULTI-SET tables.
+
+
+
+
+
+

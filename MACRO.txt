@@ -1,0 +1,271 @@
+GRANT CREATE PROCEDURE, DROP PROCEDURE, EXECUTE PROCEDURE, STATISTICS ON DEMO TO DBC;
+
+
+ CREATE PROCEDURE DEMO.SP_GETSAL(IN P_EMPNO INT,
+                           OUT P_SAL INT)
+BEGIN
+   SELECT SALARY INTO P_SAL FROM EMPLOYEE WHERE EMP_NO =P_EMPNO;
+END; 
+
+
+CREATE PROCEDURE spSample (IN pDept_No INTEGER,
+                  OUT pStatus CHARACTER(50))
+BEGIN
+  DECLARE vNoAccts INTEGER DEFAULT 0;
+   SELECT COUNT(*) INTO vNoAccts FROM EMPLOYEE WHERE DEPT_NO =pDept_No;
+   CASE
+      
+      WHEN vNoAccts > 0 THEN
+            SET pStatus = 'Total ' || vNoAccts || ' For '||pDept_NO   ;
+      ELSE
+  	    SET pStatus = 'No Employee Found For Department '||pDept_NO   ;
+     
+                                        
+   END CASE;
+END;
+create table trans( trans_num int , acct_nbr int );
+
+----------------------------------------------------------------
+CREATE PROCEDURE ProcessTrans(IN pAcctNum INTEGER,
+                              IN pStartTrans INTEGER,
+                              IN pEndTrans INTEGER )
+BEGIN
+    DECLARE vTransNum INTEGER;
+    SET vTransNum = pStartTrans;
+
+    REPEAT
+        INSERT INTO trans (trans_num, acct_nbr)
+               VALUES (vTransNum, pAcctNum);
+        SET vTransNum = vTransNum + 1;
+      UNTIL vTransNum > pEndTrans
+    END REPEAT;
+
+END;
+ 
+
+call ProcessTrans(1111,1, 10);
+
+select * from trans order by 1;
+--------------------------------------------------------------------------------------
+create table trans( trans_num int , acct_nbr int );
+
+
+replace PROCEDURE ProcessTrans(IN pAcctNum INTEGER
+                             )
+BEGIN
+	declare  hCounter int ;
+	set hCounter = 10;
+ L1:
+LOOP
+  INSERT INTO trans (trans_num, acct_nbr)     VALUES (pAcctNum,hCounter );
+  SET hCounter = hCounter - 1;
+  IF hCounter = 0 THEN
+     LEAVE L1;
+  END IF;
+END LOOP L1;
+
+END;
+-----------------------------------------------------------------------------------
+replace PROCEDURE ProcessTrans(IN pAcctNum INTEGER
+                             )
+BEGIN
+	declare  hCounter int ;
+	set hCounter = 10;
+WHILE hCounter > 0
+DO
+   INSERT INTO trans (trans_num, acct_nbr) 
+    VALUES (pAcctNum, hCounter);
+   SET hCounter = hCounter - 1;
+END WHILE;
+END;
+-------------------------------------------------------------------------------------
+
+create procedure demo()
+begin
+
+L1:
+FOR emp_cur as a  cursor FOR
+  SELECT emp_no,
+        salary,
+        dept_no
+    FROM employee
+DO
+
+  INSERT INTO emp_d VALUES (emp_cur.emp_no, emp_cur.dept_no,emp_cur.salary);
+END FOR L1;
+
+end;
+
+call demo()
+--------------------------------------------------------------------
+replace procedure demo()
+begin
+declare vNewSal decimal;
+L1:
+FOR emp_cur as a  cursor FOR
+  SELECT emp_no,
+        salary,
+        dept_no
+    FROM employee
+DO
+
+case emp_cur.dept_no
+when 100 then
+   set vNewSal = emp_cur.salary * 1.1;
+when 200 then 
+   set vNewSal = emp_cur.salary * 1.2;
+when 300 then
+  set vNewSal = emp_cur.salary * 1.3;
+end case;
+  update employee set salary =vNewSal where emp_no=emp_cur.emp_no;
+END FOR L1;
+
+end;
+-----------------------------------------------------------------
+REPLACE PROCEDURE DIVISION_BY_ZERO (IN n INTEGER) 
+BEGIN 
+    DECLARE x INTEGER DEFAULT 10; -- Error Handling programmatically 
+    set x=x/n; 
+END;
+---------------------------------------------------------
+REPLACE PROCEDURE DIVISION_BY_ZERO (IN n INTEGER) 
+BEGIN 
+    DECLARE x INTEGER DEFAULT 10; -- Error Handling programmatically 
+    CASE WHEN n = 0 THEN SET x = 0; 
+               ELSE SET x = (x/ n); 
+    END CASE; 
+END;
+--------------------------------------------------------------------------------------
+replace PROCEDURE spSample (OUT po1 VARCHAR(50)
+                           )
+BEGIN
+	l1: begin
+         DECLARE var1 VARCHAR(25) DEFAULT 'ABCD';
+         DECLARE CONTINUE HANDLER FOR SQLSTATE '42000'
+         set po1='table not found';
+        insert into emp_bteq1(first_name) values (var1);
+      end l1;
+END;
+--------------------------------------------------------    
+
+ CREATE TRIGGER trig1
+       AFTER INSERT ON EMP_BTEQ
+       REFERENCING NEW AS NewRow
+     FOR EACH ROW (
+       INSERT INTO EMP_BACK
+       VALUES (NewRow.EmployeeNo,NewRow.FirstName,NewRow.LastName,NewRow.DOB,NewRow.JOINDATE,NewRow.DepartmentNo););
+       
+  insert into emp_bteq values (106,'Ram','Kumar',current_date,current_date,1);
+  
+  select * from emp_back;
+
+
+     CREATE TRIGGER trig2
+       AFTER UPDATE ON EMP_BTEQ
+       REFERENCING OLD AS OldRow
+     FOR EACH ROW 
+       INSERT INTO EMP_BACK
+       VALUES (OldRow.EmployeeNo,OldRow.FirstName,OldRow.LastName,OldRow.DOB,OldRow.JOINDATE,OldRow.DepartmentNo);
+       ;
+       
+  UPDATE EMP_BTEQ SET DEPARTMENTNO =2 WHERE EMPLOYEENO=106;
+
+     CREATE TRIGGER trig3
+       AFTER DELETE ON EMP_BTEQ
+       REFERENCING OLD AS OldRow
+     FOR EACH ROW 
+       INSERT INTO EMP_BACK
+       VALUES (OldRow.EmployeeNo,OldRow.FirstName,OldRow.LastName,OldRow.DOB,OldRow.JOINDATE,OldRow.DepartmentNo);
+       ;
+       
+DELETE FROM EMP_BTEQ WHERE EMPLOYEENO=106;
+
+
+CREATE TRIGGER RaiseTrig
+  AFTER UPDATE OF salary ON employee
+  REFERENCING OLD AS OldRow NEW AS NewRow
+  FOR EACH ROW
+    WHEN ((NewRow.salary - OldRow.salary) / OldRow.salary >.10)
+    INSERT INTO salary_log
+    VALUES ('USER', NewRow.emp_name, OldRow.salary, NewRow.salary);
+    
+ update employee set salary = salary * 1.25 where emp_no =1000346;
+ 
+ select * from salary_log;       
+
+REPLACE MACRO sample_macro
+AS
+(
+   select * from employee;
+   select * from department;
+   
+);
+
+REPLACE MACRO sample_macro
+AS
+(
+		SELECT EMP_NO,EMP_NAME,JOB_TITILE,SALARY,COMMISSION , D.DEPT_NO,DEPARTMENT_NAME,LOC_NAME
+		FROM EMPLOYEE E JOIN DEPARTMENT D ON E.DEPT_NO =D.DEPT_NO;
+);
+
+
+
+
+REPLACE MACRO sample_macro_non_param
+AS
+(
+   UPDATE employee
+   SET commission = COALESCE(commission,0) + 250;
+   
+   LOCK ROW FOR ACCESS SELECT emp_no,salary,commission from employee;
+);
+
+
+
+REPLACE MACRO sample_macro_param(comm int)
+AS
+(
+   LOCK ROW FOR ACCESS SELECT emp_no,salary,commission from employee;
+
+   UPDATE employee
+   SET commission = COALESCE(commission,0) + :comm;
+   
+   LOCK ROW FOR ACCESS SELECT emp_no,salary,commission from employee;
+);
+
+
+execute sample_macro_param(100);
+
+
+
+REPLACE MACRO sample_macro
+AS
+(
+   UPDATE tutorial_db.employee
+   SET commission = COALESCE(commission,0) + 250;
+   LOCK ROW FOR ACCESS SELECT emp_no,salary,commission from employee;
+   DROP TABLE employee_back;
+);
+
+
+
+
+REPLACE MACRO sample_macro_Test
+AS
+(
+   LOCK ROW FOR ACCESS SELECT emp_no,salary,commission from employee;
+);
+
+
+REPLACE MACRO macro_nesting_Test(comm int)
+AS
+(
+  exec tutorial_user.sample_macro_Test;
+  
+   UPDATE tutorial_db.employee
+   SET commission = COALESCE(commission,0) + :comm;
+   
+  exec sample_macro_Test;
+);
+
+
